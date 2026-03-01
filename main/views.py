@@ -41,10 +41,7 @@ def product_list(request):
             return Response(serializer.data, status=201)
 
         return Response(serializer.errors, status=400)
-
-
-
-
+    
 def product_ui(request):
     return render(request, "product_ui.html")
 
