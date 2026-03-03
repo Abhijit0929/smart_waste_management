@@ -1,6 +1,8 @@
 from django.contrib import admin
-from .models import Product 
+from .models import SmartBin, Pickup, WasteReport 
 
 # Register your models here.
 
-admin.site.register(Product)
+admin.site.register(SmartBin)
+admin.site.register(Pickup)
+admin.site.register(WasteReport)

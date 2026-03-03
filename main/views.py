@@ -20,32 +20,24 @@ def my_api(request):
             "message": f"Hello {name}, you are {age} years old!"
         })
         
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-from .models import Product
-from .serializers import ProductSerializer
 
-@api_view(['GET', 'POST'])
-def product_list(request):
-
-    if request.method == 'GET':
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = ProductSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=201)
-
-        return Response(serializer.errors, status=400)
-    
 def product_ui(request):
     return render(request, "product_ui.html")
 
 def products_index(request):
-    products = Product.objects.all()
-    return render(request, "index_api.html", {"products": products})
+    products = [
+        {"id": 1, "name": "Product A", "price": 10.99},
+        {"id": 2, "name": "Product B", "price": 19.99},
+        {"id": 3, "name": "Product C", "price": 5.49},
+    ]
+    return JsonResponse(products, safe=False)
+
+
+from rest_framework import viewsets
+from .models import SmartBin
+from .serializers import SmartBinSerializer
+
+class SmartBinViewSet(viewsets.ModelViewSet):
+    queryset = SmartBin.objects.all()
+    serializer_class = SmartBinSerializer
 
