@@ -22,6 +22,8 @@ urlpatterns = [
     path("api/pickups/<int:id>/", views.update_pickup_status),
 
     path("api/reports/", views.report_list_create),
+    path("pickups/", views.pickups_view),
+    path("pickup/update/<int:id>/", views.update_pickup),
 
 ]
 

@@ -45,14 +45,22 @@ class Pickup(models.Model):
 
 # -------- WASTE REPORT MODEL -------- #
 class WasteReport(models.Model):
+
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(upload_to="reports/")
+
     location = models.CharField(max_length=100)
     description = models.TextField()
+
+    latitude = models.FloatField(null=True)
+    longitude = models.FloatField(null=True)
+
     status = models.CharField(
         max_length=10,
-        choices=[("open", "Open"), ("resolved", "Resolved")]
+        choices=[("open","Open"),("resolved","Resolved")]
     )
 
     def __str__(self):
         return f"Report at {self.location}"
+    
+    
+    

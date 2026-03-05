@@ -120,10 +120,14 @@ def report_waste(request):
 
         location = request.POST.get("location")
         description = request.POST.get("description")
+        latitude = request.POST.get("latitude")
+        longitude = request.POST.get("longitude")
 
         WasteReport.objects.create(
             location=location,
             description=description,
+            latitude=latitude,
+            longitude=longitude,
             status="open",
             user=request.user
         )
@@ -132,9 +136,35 @@ def report_waste(request):
 
     return render(request,"report.html")
 
-
 def reports_view(request):
 
     reports = WasteReport.objects.all()
 
     return render(request,"reports.html",{"reports":reports})
+
+
+# Pickups page view
+
+from .models import Pickup
+
+def pickups_view(request):
+
+    pickups = Pickup.objects.all()
+
+    return render(request, "pickups.html", {"pickups": pickups})
+
+
+
+def update_pickup(request, id):
+
+    pickup = Pickup.objects.get(id=id)
+
+    if pickup.status == "pending":
+        pickup.status = "in_progress"
+
+    elif pickup.status == "in_progress":
+        pickup.status = "completed"
+
+    pickup.save()
+
+    return redirect("/pickups/")
