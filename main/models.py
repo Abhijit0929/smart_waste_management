@@ -63,4 +63,10 @@ class WasteReport(models.Model):
         return f"Report at {self.location}"
     
     
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    is_worker = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username
     
