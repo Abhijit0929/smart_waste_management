@@ -26,7 +26,66 @@
   .qb-red{background:#fee2e2;color:#991b1b;}
   .qb-blue{background:#dbeafe;color:#1e40af;}
   .qb-amber{background:#fef3c7;color:#92400e;}
-  @media(max-width:768px){.two-col{grid-template-columns:1fr;}}
+
+  /* ── AI Predictions ──────────────────────────────── */
+  .ai-section{margin-bottom:20px;}
+  .ai-header-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+  .ai-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.4px;}
+  .ai-badge.critical{background:#fee2e2;color:#991b1b;}
+  .ai-badge.warning{background:#fef3c7;color:#92400e;}
+  .ai-badge.good{background:#d1fae5;color:#065f46;}
+  .ai-pulse{width:8px;height:8px;border-radius:50%;animation:pulse 1.6s infinite;}
+  .ai-pulse.critical{background:#ef4444;box-shadow:0 0 0 0 rgba(239,68,68,.5);}
+  .ai-pulse.warning{background:#f59e0b;box-shadow:0 0 0 0 rgba(245,158,11,.5);}
+  .ai-pulse.good{background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.5);}
+  @keyframes pulse{
+    0%{box-shadow:0 0 0 0 currentColor;opacity:1;}
+    70%{box-shadow:0 0 0 8px transparent;opacity:.7;}
+    100%{box-shadow:0 0 0 0 transparent;opacity:1;}
+  }
+  .ai-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;}
+  .ai-card{border-radius:16px;padding:20px;position:relative;overflow:hidden;border:.5px solid #e5e7eb;transition:transform .15s,box-shadow .2s;}
+  .ai-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.07);}
+  .ai-card-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#9ca3af;margin-bottom:8px;}
+  .ai-card-value{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;line-height:1;}
+  .ai-card-sub{font-size:12px;color:#6b7280;margin-top:6px;}
+  /* health gauge */
+  .health-gauge{position:relative;width:100px;height:100px;margin:0 auto 8px;}
+  .gauge-svg{transform:rotate(-90deg);}
+  .gauge-bg{fill:none;stroke:#f3f4f6;stroke-width:10;}
+  .gauge-fill{fill:none;stroke-width:10;stroke-linecap:round;transition:stroke-dasharray .8s ease;}
+  .gauge-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .gauge-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;}
+  .gauge-lbl{font-size:10px;color:#9ca3af;}
+  /* urgency chips */
+  .urgency-row{display:flex;flex-direction:column;gap:10px;}
+  .urgency-chip{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;}
+  .urgency-chip.crit{background:#fff0f0;}
+  .urgency-chip.warn{background:#fffbeb;}
+  .urgency-chip.safe{background:#f0fdf4;}
+  .urgency-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+  .urgency-label{font-size:13px;font-weight:500;flex:1;}
+  .urgency-count{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;}
+  /* ETA table */
+  .eta-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .eta-table th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#9ca3af;font-weight:600;padding:0 0 10px;border-bottom:1px solid #f3f4f6;}
+  .eta-table td{padding:9px 0;border-bottom:1px solid #f9fafb;vertical-align:middle;}
+  .eta-table tr:last-child td{border-bottom:none;}
+  .fill-mini{height:6px;border-radius:3px;background:#f3f4f6;overflow:hidden;width:80px;}
+  .fill-mini-inner{height:100%;border-radius:3px;transition:width .4s;}
+  .fill-mini-inner.crit{background:#ef4444;}
+  .fill-mini-inner.warn{background:#f59e0b;}
+  .fill-mini-inner.safe{background:#22c55e;}
+  .eta-badge{padding:2px 8px;border-radius:999px;font-size:11px;font-weight:600;white-space:nowrap;}
+  .eta-badge.urgent{background:#fee2e2;color:#991b1b;}
+  .eta-badge.soon{background:#fef3c7;color:#92400e;}
+  .eta-badge.ok{background:#d1fae5;color:#065f46;}
+  /* confidence bar */
+  .conf-bar-wrap{height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;margin-top:8px;}
+  .conf-bar-inner{height:100%;border-radius:4px;background:linear-gradient(90deg,#4ade80,#22c55e);}
+  .ai-insight-msg{font-size:14px;font-weight:500;color:#374151;line-height:1.5;}
+
+  @media(max-width:768px){.two-col{grid-template-columns:1fr;}.ai-grid{grid-template-columns:1fr;}}
 </style>
 
 <div class="page-header reveal">
@@ -76,7 +135,7 @@
   </div>
 </div>
 
-<!-- AVG FILL + AI -->
+<!-- AVG FILL + AI STATUS -->
 <div class="two-col reveal">
   <div class="panel">
     <div class="panel-title">📊 Average Fill Level</div>
@@ -85,10 +144,117 @@
     </div>
     <p style="font-family:'Syne',sans-serif;font-size:24px;font-weight:700;color:#22c55e;margin-top:10px;">{{ avg_fill_level }}%</p>
   </div>
-  <div class="panel">
-    <div class="panel-title">🤖 AI Prediction</div>
-    <p style="font-size:18px;font-weight:600;color:#ef4444;">{{ predicted_bins|default:"3 bins will be full soon" }}</p>
-    <p style="font-size:12px;color:#9ca3af;margin-top:8px;">Based on current fill rates and historical patterns.</p>
+  <div class="panel" style="display:flex;flex-direction:column;justify-content:center;">
+    <div class="ai-header-row" style="margin-bottom:10px;">
+      <div class="ai-pulse {{ ai_status }}"></div>
+      <span class="ai-badge {{ ai_status }}">🤖 AI Status:
+        {% if ai_status == 'critical' %}CRITICAL{% elif ai_status == 'warning' %}WARNING{% else %}HEALTHY{% endif %}
+      </span>
+    </div>
+    <p class="ai-insight-msg">{{ ai_message }}</p>
+    <div style="margin-top:14px;">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:#6b7280;margin-bottom:4px;">
+        <span>Model Confidence</span><span style="font-weight:600;color:#374151;">{{ health_score }}%</span>
+      </div>
+      <div class="conf-bar-wrap">
+        <div class="conf-bar-inner" style="width:{{ health_score }}%;"></div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:#9ca3af;margin-top:10px;">Based on fill rates, historical patterns &amp; bin density.</p>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  AI PREDICTIONS SECTION                                 -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<div class="ai-section reveal">
+  <div class="ai-header-row">
+    <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#111;">🤖 AI Predictions</span>
+    <div class="ai-pulse {{ ai_status }}"></div>
+    <span style="font-size:12px;color:#9ca3af;">Updated in real time</span>
+  </div>
+
+  <div class="ai-grid">
+
+    <!-- System Health Score -->
+    <div class="ai-card" style="background:#fafafa;text-align:center;">
+      <div class="ai-card-title">System Health Score</div>
+      <div class="health-gauge">
+        <svg class="gauge-svg" width="100" height="100" viewBox="0 0 100 100">
+          <circle class="gauge-bg" cx="50" cy="50" r="40"/>
+          <circle class="gauge-fill"
+            cx="50" cy="50" r="40"
+            stroke="{% if health_score >= 70 %}#22c55e{% elif health_score >= 40 %}#f59e0b{% else %}#ef4444{% endif %}"
+            stroke-dasharray="{{ health_score|floatformat:0 }} 251.3"
+            style="stroke-dasharray:calc({{ health_score }} * 2.513px) 251.3px;"/>
+        </svg>
+        <div class="gauge-text">
+          <span class="gauge-num" style="color:{% if health_score >= 70 %}#22c55e{% elif health_score >= 40 %}#f59e0b{% else %}#ef4444{% endif %};">{{ health_score }}</span>
+          <span class="gauge-lbl">/100</span>
+        </div>
+      </div>
+      <div class="ai-card-sub">{% if health_score >= 70 %}System in good health{% elif health_score >= 40 %}Moderate pressure on bins{% else %}Critical — action needed{% endif %}</div>
+    </div>
+
+    <!-- Urgency Breakdown -->
+    <div class="ai-card">
+      <div class="ai-card-title">Urgency Breakdown</div>
+      <div class="urgency-row">
+        <div class="urgency-chip crit">
+          <div class="urgency-dot" style="background:#ef4444;"></div>
+          <span class="urgency-label">Critical (≥85%)</span>
+          <span class="urgency-count" style="color:#ef4444;">{{ critical_bins }}</span>
+        </div>
+        <div class="urgency-chip warn">
+          <div class="urgency-dot" style="background:#f59e0b;"></div>
+          <span class="urgency-label">Warning (60–84%)</span>
+          <span class="urgency-count" style="color:#f59e0b;">{{ warning_bins }}</span>
+        </div>
+        <div class="urgency-chip safe">
+          <div class="urgency-dot" style="background:#22c55e;"></div>
+          <span class="urgency-label">Healthy (&lt;60%)</span>
+          <span class="urgency-count" style="color:#22c55e;">{{ healthy_bins }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Next-to-Fill Bins ETA -->
+    <div class="ai-card" style="grid-column: span 1;">
+      <div class="ai-card-title">⏱ Next Bins to Fill (ETA)</div>
+      {% if urgent_eta_bins %}
+      <table class="eta-table">
+        <thead>
+          <tr>
+            <th>Location</th>
+            <th>Fill</th>
+            <th>ETA</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in urgent_eta_bins %}
+          <tr>
+            <td style="font-weight:500;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ b.location }}</td>
+            <td>
+              <div class="fill-mini">
+                <div class="fill-mini-inner {% if b.fill_level >= 85 %}crit{% elif b.fill_level >= 60 %}warn{% else %}safe{% endif %}"
+                     style="width:{{ b.fill_level }}%;"></div>
+              </div>
+              <span style="font-size:11px;color:#9ca3af;">{{ b.fill_level }}%</span>
+            </td>
+            <td>
+              <span class="eta-badge {% if b.eta_hours <= 4 %}urgent{% elif b.eta_hours <= 8 %}soon{% else %}ok{% endif %}">
+                ~{{ b.eta_hours }}h
+              </span>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="font-size:13px;color:#9ca3af;margin-top:8px;">No bins tracked yet. Add bins to see predictions.</p>
+      {% endif %}
+    </div>
+
   </div>
 </div>
 

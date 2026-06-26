@@ -20,7 +20,7 @@ from rest_framework import viewsets
 
 #-------------------------------#
 # LOGIN ADMIN USERNAME AND PASS : admin/PASSWORD@1234
-
+#-------------------------------#
 
 def register_view(request):
     if request.user.is_authenticated:
@@ -291,13 +291,59 @@ def admin_dashboard(request):
     workers         = User.objects.count()
     avg_fill        = SmartBin.objects.aggregate(avg=Avg("fill_level"))["avg"] or 0
 
+    # ── AI Prediction Logic ──────────────────────────────────────────────────
+    all_bins = SmartBin.objects.all()
+
+    # Urgency buckets
+    critical_bins = [b for b in all_bins if b.fill_level >= 85]   # needs pickup now
+    warning_bins  = [b for b in all_bins if 60 <= b.fill_level < 85]  # fill soon
+    healthy_bins  = [b for b in all_bins if b.fill_level < 60]
+
+    # System health score (0–100, higher = better)
+    if total_bins > 0:
+        health_score = max(0, round(100 - (avg_fill * 0.7) - (len(critical_bins) / total_bins * 30)))
+    else:
+        health_score = 100
+
+    # Estimated hours to full (simplified: assume 5% fill/hour rate)
+    fill_rate_per_hour = 5
+    bins_eta = []
+    for b in all_bins:
+        if b.fill_level < 100:
+            hours = round((100 - b.fill_level) / fill_rate_per_hour, 1)
+            bins_eta.append({"location": b.location, "fill_level": b.fill_level, "eta_hours": hours})
+    bins_eta.sort(key=lambda x: x["eta_hours"])
+    urgent_eta_bins = bins_eta[:5]   # top-5 bins closest to full
+
+    # Overall prediction message
+    if len(critical_bins) >= 3:
+        ai_status = "critical"
+        ai_message = f"{len(critical_bins)} bins require immediate collection. Dispatch teams now."
+    elif len(critical_bins) >= 1:
+        ai_status = "warning"
+        ai_message = f"{len(critical_bins)} bin(s) critical + {len(warning_bins)} nearing capacity."
+    elif len(warning_bins) >= 2:
+        ai_status = "warning"
+        ai_message = f"{len(warning_bins)} bins are nearing capacity. Schedule pickups soon."
+    else:
+        ai_status = "good"
+        ai_message = "All bins are within safe fill levels. System is operating normally."
+
     context = {
-        "total_bins":      total_bins,
-        "full_bins":       full_bins,
-        "pending_pickups": pending_pickups,
-        "reports":         reports,
-        "workers":         workers,
-        "avg_fill_level":  round(avg_fill),
+        "total_bins":       total_bins,
+        "full_bins":        full_bins,
+        "pending_pickups":  pending_pickups,
+        "reports":          reports,
+        "workers":          workers,
+        "avg_fill_level":   round(avg_fill),
+        # AI Prediction context
+        "ai_status":        ai_status,
+        "ai_message":       ai_message,
+        "health_score":     health_score,
+        "critical_bins":    len(critical_bins),
+        "warning_bins":     len(warning_bins),
+        "healthy_bins":     len(healthy_bins),
+        "urgent_eta_bins":  urgent_eta_bins,
     }
 
     return render(request, "admin_dashboard.html", context)
