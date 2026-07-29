@@ -1,6 +1,7 @@
 import json
 
 from pages.login_page import LoginPage
+from pages.home_page import HomePage
 
 
 def test_valid_login(driver):
@@ -9,6 +10,7 @@ def test_valid_login(driver):
         data = json.load(file)
 
     login = LoginPage(driver)
+    home = HomePage(driver)
 
     login.open()
 
@@ -17,4 +19,4 @@ def test_valid_login(driver):
         data["password"]
     )
 
-    assert "dashboard" in driver.current_url.lower()
+    assert home.is_loaded()

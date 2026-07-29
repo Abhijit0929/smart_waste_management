@@ -1,11 +1,10 @@
-BASE_URL = "http://127.0.0.1:8000/"
+import os
+from config.settings import Settings
 
-BROWSER = "chrome"
+# Read from environment variables set during pytest initialization
+env = os.getenv("TEST_ENV", "dev")
+settings = Settings(env)
 
-TIMEOUT = 10
-
-HEADLESS = False
-
-SCREENSHOT_PATH = "screenshots/"
-
-REPORT_PATH = "reports/report.html"
+BASE_URL = settings.base_url
+BROWSER = os.getenv("TEST_BROWSER", "chrome")
+TIMEOUT = settings.timeout
