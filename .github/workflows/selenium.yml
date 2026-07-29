@@ -2,18 +2,13 @@ name: Selenium Automation Framework
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [main]
 
   pull_request:
-    branches:
-      - main
-      - master
+    branches: [main]
 
 jobs:
-
-  selenium-test:
+  selenium-tests:
 
     runs-on: ubuntu-latest
 
@@ -30,18 +25,19 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        pip install -r Automation/requirements.txt
 
     - name: Install Chrome
       uses: browser-actions/setup-chrome@v1
 
-    - name: Run Selenium Tests
+    - name: Run Tests
+      working-directory: Automation
       run: |
         pytest
 
     - name: Upload HTML Report
-      uses: actions/upload-artifact@v4
       if: always()
+      uses: actions/upload-artifact@v4
       with:
         name: Selenium-Report
-        path: reports/
+        path: Automation/reports/
