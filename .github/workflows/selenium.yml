@@ -32,6 +32,27 @@ jobs:
         run: |
           python manage.py migrate
 
+      - name: Create Test User
+        run: |
+          python manage.py shell <<EOF
+          from django.contrib.auth import get_user_model
+
+          User = get_user_model()
+
+          username = "abhijitdhumale2909@gmail.com"
+          email = "abhijitdhumale2909@gmail.com"
+          password = "Abhi2909"
+
+          if not User.objects.filter(username=username).exists():
+            User.objects.create_user(
+                username=username,
+                email=email,
+                password=password
+            )
+
+          print("Test user ready.")
+          EOF
+
       - name: Start Django Server
         run: |
           python manage.py runserver 127.0.0.1:8000 &
