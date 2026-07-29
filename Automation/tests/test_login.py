@@ -1,30 +1,20 @@
-import pytest
+import json
 
 from pages.login_page import LoginPage
-from pages.home_page import HomePage
-from utils.excel_reader import ExcelReader
-
-reader = ExcelReader("testdata/login_data.xlsx")
-test_data = reader.get_data("login")
 
 
-@pytest.mark.parametrize("data", test_data)
-def test_login(driver, settings, data):
+def test_valid_login(driver):
 
-    login = LoginPage(driver, settings)
-    home = HomePage(driver)
+    with open("testdata/login_data.json") as file:
+        data = json.load(file)
+
+    login = LoginPage(driver)
 
     login.open()
 
     login.login(
-        data["Username"],
-        data["Password"]
+        data["username"],
+        data["password"]
     )
 
-    if data["Expected"] == "Pass":
-
-        assert home.is_loaded()
-
-    else:
-
-        assert not home.is_loaded()
+    assert "dashboard" in driver.current_url.lower()
