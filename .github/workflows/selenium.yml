@@ -1,43 +1,50 @@
-name: Selenium Automation Framework
+name: Selenium Automation CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
   pull_request:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   selenium-tests:
-
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-    - name: Checkout Repository
-      uses: actions/checkout@v4
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
 
-    - name: Setup Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: "3.11"
+      - name: Install Project Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
 
-    - name: Install Dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r Automation/requirements.txt
+      - name: Install Chrome
+        uses: browser-actions/setup-chrome@v1
 
-    - name: Install Chrome
-      uses: browser-actions/setup-chrome@v1
+      - name: Run Django Migrations
+        run: |
+          python manage.py migrate
 
-    - name: Run Tests
-      working-directory: Automation
-      run: |
-        pytest
+      - name: Start Django Server
+        run: |
+          python manage.py runserver 127.0.0.1:8000 &
+          sleep 10
 
-    - name: Upload HTML Report
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: Selenium-Report
-        path: Automation/reports/
+      - name: Run Selenium Tests
+        working-directory: Automation
+        run: |
+          pytest
+
+      - name: Upload HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Selenium-HTML-Report
+          path: Automation/reports/
